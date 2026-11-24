@@ -80,7 +80,6 @@ Aplikasi dirancang **tidak butuh `php artisan` sama sekali**:
 > Logo/favicon tersimpan di `public/uploads/` — **tidak perlu `storage:link`**.
 
 
-
 > Ganti password ini **segera** di menu Pengaturan → Keamanan saat produksi.
 
 ### Catatan penting hosting

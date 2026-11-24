@@ -1,0 +1,14 @@
+# Dibuat otomatis — blokir eksekusi skrip (anti web-shell)
+<FilesMatch "\.(php|phtml|php[0-9]|phps|phar|pl|py|cgi|sh|asp|aspx|jsp|htaccess)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+Options -Indexes -ExecCGI
+<IfModule mod_php.c>
+    php_flag engine off
+</IfModule>

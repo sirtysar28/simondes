@@ -1,0 +1,54 @@
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Redirect Trailing Slashes If Not A Folder...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} (.+)/$
+    RewriteRule ^ %1 [L]
+
+    # Send Requests To Front Controller...
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# =============================================================
+# HARDENING SiMONDES (anti web-shell / php2shell)
+# =============================================================
+
+# Blokir file skrip yang umum dipakai web-shell
+<FilesMatch "(?i)\.(php|phtml|php[0-9]|phps|phar|pl|py|cgi|sh|asp|aspx|jsp)$">
+    <IfModule mod_authz_core.c>
+        # Kecualikan index.php front controller Laravel
+        Require all denied
+    </IfModule>
+</FilesMatch>
+
+<Files "index.php">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+</Files>
+
+# Blokir berkas konfigurasi sensitif
+<FilesMatch "(^\.env|\.env\.$|composer\.(json|lock)$|artisan$|\.git.*)">
+    Require all denied
+</FilesMatch>
+
+# Header keamanan tambahan (lapisan kedua setelah middleware aplikasi)
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "DENY"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Nonaktifkan engine PHP di dalam folder upload via symlink storage (Apache mod_php)
+# Catatan: proteksi utama tetap .htaccess di storage/app/public
